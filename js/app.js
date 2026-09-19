@@ -388,7 +388,35 @@
       `<button class="acct-tab ${heroAcct === t.id ? 'active' : ''}" data-acct="${t.id}">${t.label}</button>`).join('');
     $$('#acct-tabs .acct-tab').forEach(b => b.addEventListener('click', () => { heroAcct = b.dataset.acct; renderHome(); }));
 
-    
+    /* Hero amount */
+    const hero = $('#hero-amount');
+    const sub = $('#hero-sub');
+    if (heroAcct === 'all') {
+      const tt = totals();
+      if (state.mask) { hero.textContent = 'J$ •••••••'; hero.classList.add('masked'); }
+      else { hero.classList.remove('masked'); countUp(hero, tt.bal, v => money(v)); }
+      sub.innerHTML = `
+        <span class="sub-pill avail">${icon('i-check-circle')} Available <b class="num">${state.mask ? '••••••' : money0(tt.avail)}</b></span>
+        <button class="sub-pill lien" id="lien-pill">${icon('i-lock')} Lien holds <b class="num">${money0(tt.lien)}</b> ⓘ</button>`;
+      $('#lien-pill').addEventListener('click', openLienModal);
+    } else {
+      const a = accounts.find(x => x.id === heroAcct);
+      if (state.mask) { hero.textContent = CUR[a.currency] + ' •••••••'; hero.classList.add('masked'); }
+      else { hero.classList.remove('masked'); countUp(hero, acctEff(a), v => money(v, a.currency)); }
+      sub.innerHTML = `
+        <span class="sub-pill avail">${icon('i-check-circle')} Available <b class="num">${state.mask ? '••••••' : money0(acctAvailable(a), a.currency)}</b></span>
+        ${a.lien ? `<button class="sub-pill lien" id="lien-pill">${icon('i-lock')} Lien <b class="num">${money0(a.lien.amount)}</b> ⓘ</button>` : ''}
+        <span class="sub-pill">${icon('i-wallet')} ${a.nickname} ${a.number}</span>`;
+      const lp = $('#lien-pill'); if (lp) lp.addEventListener('click', openLienModal);
+    }
+
+    renderQuickActions();
+    renderMiniCards();
+    renderSpend();
+    renderRecent();
+    renderCashflow();
+    renderInvestTeaser();
+  }
 
   function openLienModal() {
     const rows = accounts.filter(a => a.lien).map(a => `
