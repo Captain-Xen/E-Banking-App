@@ -1,0 +1,50 @@
+/* ═══════════════════════════════════════════════════════════════
+   BlueMahoe Bank — print.css
+   When printing, only the statement sheet (#print-root) is output.
+   ═══════════════════════════════════════════════════════════════ */
+
+#print-root { display: none; }
+
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm 12mm;
+  }
+
+  html, body {
+    background: #fff !important;
+    overflow: visible !important;
+  }
+
+  /* Hide the entire app UI */
+  #app, #screen-login, #screen-app, #boot, #curtain,
+  #welcome-overlay, #otp-overlay, #biometric-overlay,
+  #modal-root, #toast-root, #confetti-canvas, #chart-tip,
+  .aurora, .topbar, .sidebar, .bottomnav, .view-head, .toolbar, .paper-wrap {
+    display: none !important;
+  }
+
+  /* Show only the statement */
+  #print-root { display: block !important; }
+
+  .print-sheet {
+    background: #fff !important;
+    color: #17272b !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    font-size: 10.5pt;
+  }
+
+  .print-sheet .st-head { border-bottom-color: #009a8d; }
+
+  .st-table { page-break-inside: auto; }
+  .st-table tr { page-break-inside: avoid; page-break-after: auto; }
+  .st-table thead { display: table-header-group; }
+  .st-foot { position: fixed; bottom: 0; left: 0; right: 0; }
+
+  .no-print { display: none !important; }
+}
