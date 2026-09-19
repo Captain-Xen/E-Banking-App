@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-view="paradise">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>BlueMahoe Bank — Digital Banking</title>
+<meta name="description" content="BlueMahoe Bank — banking the island way. Demo digital banking experience." />
+<meta name="theme-color" content="#00b8a9" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2300b8a9'/%3E%3Cstop offset='1' stop-color='%230ea5e9'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='2' y='2' width='44' height='44' rx='14' fill='url(%23g)'/%3E%3Ccircle cx='32' cy='15' r='6' fill='%23ffd44d'/%3E%3Cpath d='M4 32c7-6 11-6 18 0s11 6 18 0' fill='none' stroke='%23fff' stroke-width='3.4' stroke-linecap='round' opacity='.95'/%3E%3Cpath d='M4 39c7-6 11-6 18 0s11 6 18 0' fill='none' stroke='%23fff' stroke-width='3.4' stroke-linecap='round' opacity='.55'/%3E%3C/svg%3E" />
+<script>
+/* Apply saved preferences before first paint (prevents theme flash) */
+(function () {
+  try {
+    var s = JSON.parse(localStorage.getItem('bm_state_v1') || '{}');
+    var html = document.documentElement;
+    if (s.theme) html.dataset.theme = s.theme;
+    if (s.view) html.dataset.view = s.view;
+    if (s.brand) html.style.setProperty('--brand', s.brand);
+    if (s.reduceMotion) html.classList.add('reduce-motion');
+  } catch (e) {}
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/styles.css?v=5" />
+<link rel="stylesheet" href="css/print.css?v=5" />
+</head>
+<body>
+
+<!-- ══════════════════════ SVG ICON SPRITE ══════════════════════ -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <defs>
+    <linearGradient id="lg-brand" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00b8a9"/><stop offset="1" stop-color="#0ea5e9"/>
+    </linearGradient>
+  </defs>
+  <symbol id="i-logo" viewBox="0 0 48 48">
+    <rect x="2" y="2" width="44" height="44" rx="14" fill="url(#lg-brand)"/>
+    <circle cx="32" cy="15" r="6" fill="#ffd44d"/>
+    <path d="M4 32c7-6 11-6 18 0s11 6 18 0" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" opacity=".95"/>
+    <path d="M4 39c7-6 11-6 18 0s11 6 18 0" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" opacity=".55"/>
+  </symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20a1 1 0 0 0 1 1H10v-5.5h4V21h3.5a1 1 0 0 0 1-1V9.5"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M4 6h.01M4 12h.01M4 18h.01M9 6h11M9 12h11M9 18h11"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M2.5 10h19M6.5 15h4"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M21.5 2.5 11 13"/><path d="M21.5 2.5 15 21l-4-8-8-4 18.5-6.5z"/></symbol>
+  <symbol id="i-trend-up" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 7.5-8.5"/><path d="M14.5 6.5h6v6"/></symbol>
+  <symbol id="i-trend-down" viewBox="0 0 24 24"><path d="M3 7l6 6 4-4 7.5 8.5"/><path d="M14.5 17.5h6v-6"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2.5H7a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7.5z"/><path d="M14 2.5v5h5M9 13h6M9 17h6"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7.5h8M17.5 7.5H20"/><circle cx="14.7" cy="7.5" r="2.4"/><path d="M4 16.5h2.5M12 16.5h8"/><circle cx="9.3" cy="16.5" r="2.4"/></symbol>
+  <symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3"/><path d="M16 17l5-5-5-5M21 12H9"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8.5a6 6 0 1 0-12 0c0 6.5-2.5 8-2.5 8h17s-2.5-1.5-2.5-8"/><path d="M10.3 20.5a2 2 0 0 0 3.4 0"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5 5l1.4 1.4M17.6 17.6 19 19M19 5l-1.4 1.4M6.4 17.6 5 19"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></symbol>
+  <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3.5 13.8 9l5.7 1.8-5.7 1.8L12 18.5l-1.8-5.9L4.5 10.8 10.2 9z"/><path d="M19 15.5l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/></symbol>
+  <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M11.5 20.5A7.5 7.5 0 0 1 4 13C4 7.5 8.5 3.5 15 3c2.8-.2 5 .5 5 .5s.5 3-.5 6c-1.6 5-4.5 11-8 11z"/><path d="M4.5 20 13 11.5"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M4.5 12.5 9.5 17.5 19.5 6.5"/></symbol>
+  <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.2 12.4l2.6 2.6 5-5.4"/></symbol>
+  <symbol id="i-chev-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-chev-right" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+  <symbol id="i-arr-out" viewBox="0 0 24 24"><path d="M7 17 17 7"/><path d="M8.5 7H17v8.5"/></symbol>
+  <symbol id="i-arr-in" viewBox="0 0 24 24"><path d="M17 7 7 17"/><path d="M15.5 17H7V8.5"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M4 4l16 16"/><path d="M10 5.9A9.7 9.7 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17.6 17.6 0 0 1-3.2 3.9M14.1 18.2A9.9 9.9 0 0 1 12 18.5C6 18.5 2.5 12 2.5 12a17.5 17.5 0 0 1 3.8-4.3"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9.5" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-unlock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9.5" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 7.8-1.2"/></symbol>
+  <symbol id="i-snow" viewBox="0 0 24 24"><path d="M12 2.5v19M2.5 12h19M5.3 5.3l13.4 13.4M18.7 5.3 5.3 18.7"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2.5 20 5.5v6c0 5-3.3 8.4-8 10.5-4.7-2.1-8-5.5-8-10.5v-6z"/><path d="M9 12l2 2 4-4.5"/></symbol>
+  <symbol id="i-finger" viewBox="0 0 24 24"><path d="M5 8.5a8 8 0 0 1 14 0"/><path d="M7.5 11a4.5 4.5 0 0 1 9 0v3.5c0 2.4-.5 4.5-1.3 6.3"/><path d="M12 11v3.5c0 2.6-.5 4.9-1.4 6.9"/><path d="M8.6 20.6c.9-2 1.4-4.2 1.4-6.1"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M21.5 16.9v2.6a2 2 0 0 1-2.2 2 19.9 19.9 0 0 1-8.6-3.1 19.4 19.4 0 0 1-6-6A19.9 19.9 0 0 1 1.6 3.8 2 2 0 0 1 3.6 1.6h2.6a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L7.2 9.4a16 16 0 0 0 6 6l1.2-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z" transform="translate(1 1.5) scale(.92)"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M3.5 7.5 12 13.5l8.5-6"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14.5 14.5 0 0 1 0 18M12 3a14.5 14.5 0 0 0 0 18"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3.5V15M7.5 10.5 12 15l4.5-4.5"/><path d="M4 20.5h16"/></symbol>
+  <symbol id="i-printer" viewBox="0 0 24 24"><path d="M6.5 9V3h11v6"/><path d="M6.5 17.5H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-1.5"/><rect x="6.5" y="14.5" width="11" height="6.5" rx="1"/></symbol>
+  <symbol id="i-filter" viewBox="0 0 24 24"><path d="M21 4H3l7.5 9v6.5l3-1.8V13z"/></symbol>
+  <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M16 3v4M8 3v4M3 11h18"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c.8-3.7 3.9-5.5 7.5-5.5s6.7 1.8 7.5 5.5"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M20.5 7.5H5a2 2 0 0 1 0-4h13.5v4"/><rect x="3.5" y="7.5" width="17" height="12" rx="2.5"/><path d="M16 13.5h2"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 4.2 2.6 17.8a2 2 0 0 0 1.7 3h15.4a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0z"/><path d="M12 9.5v4.5M12 17.3h.01"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M12 11.5V16"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.3 9.2a2.8 2.8 0 0 1 5.4.9c0 1.8-2.7 2.2-2.7 3.9M12 17.2h.01"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24"><path d="M17 3.5 20.5 7 8 19.5 3.5 20.5 4.5 16z"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11.5" height="11.5" rx="2.5"/><path d="M5 15V5.5A2.5 2.5 0 0 1 7.5 3H17"/></symbol>
+  <symbol id="i-bank" viewBox="0 0 24 24"><path d="M12 3 3 8v1.5h18V8z"/><path d="M5 9.5V17M9.5 9.5V17M14.5 9.5V17M19 9.5V17"/><path d="M3 20.5h18M3 17h18"/></symbol>
+  <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M5 2.5h14V21l-2.8-1.8L13.5 21 11 19.2 8.5 21 5 19.2z"/><path d="M9 8h6M9 12h6"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.2 2"/></symbol>
+  <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M5 9.5a11 11 0 0 1 14 0"/><path d="M8 13a7 7 0 0 1 8 0"/><path d="M11 16.5a3 3 0 0 1 2 0"/><path d="M12 19.5h.01"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.8 5.8 6.2.8-4.6 4.4 1.2 6.3L12 17.2 6.4 20.3l1.2-6.3L3 9.6l6.2-.8z"/></symbol>
+  <symbol id="i-food" viewBox="0 0 24 24"><path d="M4.5 2.5v6a2.5 2.5 0 0 0 2.5 2.5h1V2.5M7 11v10.5"/><path d="M17.5 2.5c-1.8 1.2-3 3.4-3 5.5 0 1.8 1.2 3 3 3v10.5M17.5 2.5v8.5"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 24 24"><circle cx="9.5" cy="20" r="1.4"/><circle cx="17" cy="20" r="1.4"/><path d="M3 3.5h2.2l2.5 11.6a1.8 1.8 0 0 0 1.8 1.4h7.7a1.8 1.8 0 0 0 1.8-1.4L20.8 8H6"/></symbol>
+  <symbol id="i-car" viewBox="0 0 24 24"><path d="M4 16.5V13l1.8-4.3A2 2 0 0 1 7.6 7.4h8.8a2 2 0 0 1 1.8 1.3L20 13v3.5M4 16.5h16M4 16.5V19M20 16.5V19"/><circle cx="7.5" cy="13.4" r=".9"/><circle cx="16.5" cy="13.4" r=".9"/></symbol>
+  <symbol id="i-pill" viewBox="0 0 24 24"><path d="M10.5 20.5a5 5 0 0 1-7-7l7-7a5 5 0 0 1 7 7z"/><path d="m8.5 8.5 7 7"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 8.5 16 12l-6 3.5z"/></symbol>
+  <symbol id="i-case" viewBox="0 0 24 24"><rect x="3" y="7.5" width="18" height="13" rx="2.5"/><path d="M8.5 7.5V6a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v1.5M3 13h18"/></symbol>
+</svg>
+
+<!-- ══════════════════════ BOOT SPLASH ══════════════════════ -->
+<div id="boot" role="status" aria-label="Loading BlueMahoe Bank">
+  <div class="boot-inner">
+    <svg class="boot-logo"><use href="#i-logo"/></svg>
+    <div class="boot-word">Blue<span>Mahoe</span></div>
+    <div class="boot-bar"><i></i></div>
+    <div class="boot-tag">Banking the island way</div>
+  </div>
+</div>
+
+<!-- ══════════════════════ LOGIN ══════════════════════ -->
+<section id="screen-login" class="screen auth-screen" aria-label="Log in">
+  <div class="auth-wrap">
+    <aside class="auth-hero">
+      <div class="aurora" aria-hidden="true"><i class="a1"></i><i class="a2"></i><i class="a3"></i></div>
+      <div class="auth-hero-inner">
+        <svg class="auth-logo"><use href="#i-logo"/></svg>
+        <h1>Feel the flow of<br/><em>island money.</em></h1>
+        <p>Accounts, cards, investments and instant Lynk &amp; Jam&#8209;Dex payments — all in one breeze.</p>
+        <ul class="auth-points">
+          <li><svg class="ic"><use href="#i-shield"/></svg> 256-bit encryption &amp; 2-step verification</li>
+          <li><svg class="ic"><use href="#i-wifi"/></svg> Lynk &amp; Jam-Dex ready cards</li>
+          <li><svg class="ic"><use href="#i-trend-up"/></svg> Grow with island investments</li>
+        </ul>
+        <div class="hero-wave" aria-hidden="true">
+          <svg viewBox="0 0 560 120" preserveAspectRatio="none"><path d="M0 60 C 90 20 160 95 280 62 S 470 15 560 55 V120 H0 Z" fill="rgba(255,255,255,.14)"/><path d="M0 82 C 110 45 190 110 300 80 S 480 40 560 78 V120 H0 Z" fill="rgba(255,255,255,.20)"/></svg>
+        </div>
+      </div>
+    </aside>
+
+    <div class="auth-panel">
+      <div class="auth-card panel">
+        <div class="auth-brand">
+          <svg class="auth-brand-logo"><use href="#i-logo"/></svg>
+          <div><b>BlueMahoe</b><span>Digital Banking</span></div>
+        </div>
+        <h2>Welcome back</h2>
+        <p class="auth-sub">Log in to your BlueMahoe accounts.</p>
+
+        <form id="login-form" novalidate>
+          <div class="field">
+            <label for="login-user">Username or customer ID</label>
+            <div class="input-wrap">
+              <svg class="ic"><use href="#i-user"/></svg>
+              <input id="login-user" type="text" autocomplete="username" placeholder="demo" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="login-pass">Password</label>
+            <div class="input-wrap">
+              <svg class="ic"><use href="#i-lock"/></svg>
+              <input id="login-pass" type="password" autocomplete="current-password" placeholder="••••••••" />
+              <button type="button" class="peek" id="btn-peek" aria-label="Show password"><svg class="ic"><use href="#i-eye"/></svg></button>
+            </div>
+          </div>
+          <div class="auth-row">
+            <label class="check"><input type="checkbox" id="login-remember" checked /><i></i>Remember me</label>
+            <button type="button" class="link" id="btn-forgot">Forgot password?</button>
+          </div>
+          <p class="form-error" id="login-error" role="alert" hidden></p>
+          <button class="btn btn-primary btn-lg btn-block" id="btn-login" type="submit">
+            <span class="btn-label">Log in securely</span>
+            <svg class="ic btn-arrow"><use href="#i-chev-right"/></svg>
+            <span class="btn-spinner" aria-hidden="true"></span>
+          </button>
+          <button class="btn btn-soft btn-block" id="btn-biometric" type="button">
+            <svg class="ic"><use href="#i-finger"/></svg> Log in with biometrics
+          </button>
+          <div class="demo-hint">
+            <svg class="ic"><use href="#i-info"/></svg>
+            <div><b>Demo access:</b> <code>demo</code> / <code>island2026</code>
+              <button type="button" class="link" id="btn-fill-demo">Fill for me</button>
+            </div>
+          </div>
+        </form>
+        <p class="auth-foot">Fictional demo bank for showcase purposes — no real money involved.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ BIOMETRIC SCAN OVERLAY ══════════════════════ -->
+<div id="biometric-overlay" class="overlay" aria-hidden="true">
+  <div class="bio-card panel">
+    <div class="bio-ring">
+      <svg viewBox="0 0 96 96" class="bio-print"><use href="#i-finger" width="96" height="96"/></svg>
+      <i class="scanline"></i>
+    </div>
+    <h3 id="bio-title">Scanning fingerprint…</h3>
+    <p id="bio-sub">Hold still — verifying it's really you.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════ 2FA / OTP OVERLAY ══════════════════════ -->
+<div id="otp-overlay" class="overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Two-step verification">
+  <div class="otp-card panel pop-in">
+    <div class="otp-shield"><svg class="ic"><use href="#i-shield"/></svg></div>
+    <h3 id="otp-title">Two-step verification</h3>
+    <p class="otp-sub" id="otp-sub">Enter the 6-digit code we sent to your phone.</p>
+    <p class="otp-line" id="otp-line" hidden></p>
+
+    <div class="otp-row" id="otp-row" autocomplete="one-time-code">
+      <input class="otp-box" type="text" inputmode="numeric" maxlength="1" aria-label="Digit 1" />
+      <input class="otp-box" type="text" inputmode="numeric" maxlength="1" aria-label="Digit 2" />
+      <input class="otp-box" type="text" inputmode="numeric" maxlength="1" aria-label="Digit 3" />
+      <span class="otp-dash"></span>
+      <input class="otp-box" type="text" inputmode="numeric" maxlength="1" aria-label="Digit 4" />
+      <input class="otp-box" type="text" inputmode="numeric" maxlength="1" aria-label="Digit 5" />
+      <input class="otp-box" type="text" inputmode="numeric" maxlength="1" aria-label="Digit 6" />
+    </div>
+
+    <p class="form-error center" id="otp-error" role="alert" hidden></p>
+
+    <button class="btn btn-primary btn-lg btn-block" id="otp-verify"><span class="btn-label">Verify code</span><span class="btn-spinner" aria-hidden="true"></span></button>
+    <div class="otp-foot">
+      <span id="otp-timer">Resend available in 30s</span>
+      <button class="link" id="otp-resend" disabled>Resend code</button>
+    </div>
+    <div class="demo-hint">
+      <svg class="ic"><use href="#i-info"/></svg>
+      <div><b>Demo inbox:</b> your code is <code id="otp-hint">------</code>
+        <button type="button" class="link" id="otp-autofill">Autofill</button>
+      </div>
+    </div>
+    <button class="link dim" id="otp-cancel">Cancel and go back</button>
+  </div>
+</div>
+
+<!-- ══════════════════════ WELCOME OVERLAY ══════════════════════ -->
+<div id="welcome-overlay" class="overlay welcome" aria-hidden="true">
+  <div class="aurora" aria-hidden="true"><i class="a1"></i><i class="a2"></i><i class="a3"></i></div>
+  <div class="welcome-inner">
+    <svg class="welcome-logo draw"><use href="#i-logo"/></svg>
+    <h2 id="welcome-greet">Welcome back, Marlon</h2>
+    <p class="welcome-sub" id="welcome-sub">Your accounts are secured and ready.</p>
+    <div class="welcome-meta" id="welcome-meta">
+      <span class="badge badge-ok"><svg class="ic"><use href="#i-check"/></svg> Encrypted session</span>
+      <span class="badge"><svg class="ic"><use href="#i-clock"/></svg> <span id="welcome-last">Last login: today</span></span>
+    </div>
+
+    <div class="view-chooser" id="view-chooser" hidden>
+      <h3>Choose your experience</h3>
+      <p>You can switch anytime from the header or Settings.</p>
+      <div class="chooser-cards">
+        <button class="chooser" data-pick="simple" type="button">
+          <span class="mini-preview simple-prev"><i></i><i></i><i></i></span>
+          <b>Simple View</b>
+          <span>Clean, flat and fast. The essentials, no frills.</span>
+          <span class="chip">Compact</span>
+        </button>
+        <button class="chooser" data-pick="paradise" type="button">
+          <span class="mini-preview paradise-prev"><i></i><i></i><i></i></span>
+          <b>Paradise View</b>
+          <span>The full experience — glass, glow and motion.</span>
+          <span class="chip chip-sun">Fancy</span>
+        </button>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-lg" id="welcome-continue" hidden>
+      <span class="btn-label">Enter my bank</span> <svg class="ic"><use href="#i-chev-right"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════ LOGOUT CURTAIN ══════════════════════ -->
+<div id="curtain" aria-hidden="true">
+  <div class="curtain-inner">
+    <svg class="curtain-logo"><use href="#i-logo"/></svg>
+    <h2 id="curtain-msg">Walk good 👋</h2>
+    <p id="curtain-sub">See you soon.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════ APP SHELL ══════════════════════ -->
+<div id="screen-app" class="screen app-shell" hidden>
+  <div class="aurora" aria-hidden="true"><i class="a1"></i><i class="a2"></i><i class="a3"></i></div>
+
+  <!-- Sidebar (desktop) -->
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="side-brand">
+      <svg class="side-logo"><use href="#i-logo"/></svg>
+      <div class="side-brand-txt"><b>BlueMahoe</b><span>Digital Banking</span></div>
+    </div>
+    <nav class="side-nav" id="side-nav">
+      <button class="nav-item active" data-nav="home"><svg class="ic"><use href="#i-home"/></svg><span>Home</span></button>
+      <button class="nav-item" data-nav="txns"><svg class="ic"><use href="#i-list"/></svg><span>Transactions</span></button>
+      <button class="nav-item" data-nav="cards"><svg class="ic"><use href="#i-card"/></svg><span>Cards</span></button>
+      <button class="nav-item" data-nav="send"><svg class="ic"><use href="#i-send"/></svg><span>Send Money</span></button>
+      <button class="nav-item" data-nav="invest"><svg class="ic"><use href="#i-trend-up"/></svg><span>Investments</span></button>
+      <button class="nav-item" data-nav="statements"><svg class="ic"><use href="#i-file"/></svg><span>Statements</span></button>
+      <button class="nav-item" data-nav="settings"><svg class="ic"><use href="#i-sliders"/></svg><span>Settings</span></button>
+    </nav>
+    <div class="side-foot">
+      <div class="session-pill" id="session-pill" title="Session auto-locks after inactivity">
+        <svg class="ic"><use href="#i-shield"/></svg>
+        <div><span>Secure session</span><b id="session-timer">10:00</b></div>
+      </div>
+      <button class="btn btn-soft btn-block" id="btn-logout"><svg class="ic"><use href="#i-logout"/></svg> Log out</button>
+      <span class="side-ver">BlueMahoe · v1.0 · Demo</span>
+    </div>
+  </aside>
+  <div class="nav-backdrop" id="nav-backdrop" hidden></div>
+
+  <!-- Main column -->
+  <div class="main-col">
+    <header class="topbar">
+      <button class="btn btn-icon only-mobile" id="btn-menu" aria-label="Open menu"><svg class="ic"><use href="#i-list"/></svg></button>
+      <div class="topbar-title">
+        <h1 id="page-title">Home</h1>
+        <span class="topbar-date" id="topbar-date"></span>
+      </div>
+      <div class="topbar-search only-desktop">
+        <svg class="ic"><use href="#i-search"/></svg>
+        <input id="global-search" type="search" placeholder="Search transactions… (Enter)" aria-label="Search transactions" />
+      </div>
+      <div class="topbar-actions">
+        <div class="seg seg-mini" id="view-toggle" role="group" aria-label="Switch interface style">
+          <button class="seg-btn" data-set-view="simple" title="Simple View" aria-label="Simple View"><svg class="ic"><use href="#i-leaf"/></svg></button>
+          <button class="seg-btn" data-set-view="paradise" title="Paradise View" aria-label="Paradise View"><svg class="ic"><use href="#i-sparkle"/></svg></button>
+        </div>
+        <button class="btn btn-icon" id="btn-theme" aria-label="Toggle light or dark mode"><svg class="ic ic-sun"><use href="#i-sun"/></svg><svg class="ic ic-moon"><use href="#i-moon"/></svg></button>
+        <button class="btn btn-icon" id="btn-bell" aria-label="Notifications"><svg class="ic"><use href="#i-bell"/></svg><i class="dot" id="bell-dot"></i></button>
+        <button class="avatar" id="btn-avatar" aria-label="Profile"><span id="avatar-txt">MB</span></button>
+      </div>
+    </header>
+
+    <main class="view-root" id="view-root">
+
+      <!-- ═════ HOME ═════ -->
+      <section class="view" id="view-home" hidden>
+        <div class="fx-ticker" id="fx-ticker" aria-label="Today's FX rates">
+          <div class="fx-track" id="fx-track"></div>
+        </div>
+
+        <div class="dash-grid">
+          <div class="panel hero" id="hero-panel">
+            <div class="hero-head">
+              <div>
+                <p class="hero-greet" id="hero-greet">Good morning 👋</p>
+                <h2 class="hero-name" id="hero-name">Marlon</h2>
+              </div>
+              <button class="btn btn-icon" id="btn-hide-bal" aria-label="Hide balances"><svg class="ic"><use href="#i-eye"/></svg></button>
+            </div>
+            <div class="acct-tabs" id="acct-tabs" role="tablist"></div>
+            <div class="hero-amount" id="hero-amount">J$0.00</div>
+            <div class="hero-sub" id="hero-sub"></div>
+            <div class="qa-grid" id="qa-grid"></div>
+          </div>
+
+          <div class="panel widget-cards">
+            <div class="panel-head">
+              <h3>My cards</h3>
+              <button class="link" data-nav="cards">Manage<svg class="ic"><use href="#i-chev-right"/></svg></button>
+            </div>
+            <div class="mini-cards" id="mini-cards"></div>
+          </div>
+
+          <div class="panel widget-spend">
+            <div class="panel-head">
+              <h3>Spending this month</h3>
+              <span class="chip" id="spend-total">J$0</span>
+            </div>
+            <div class="spend-flex">
+              <div id="spend-donut" class="spend-donut"></div>
+              <div class="spend-legend" id="spend-legend"></div>
+            </div>
+          </div>
+
+          <div class="panel widget-recent">
+            <div class="panel-head">
+              <h3>Recent activity</h3>
+              <button class="link" data-nav="txns">View all<svg class="ic"><use href="#i-chev-right"/></svg></button>
+            </div>
+            <div id="txn-preview" class="txn-list"></div>
+          </div>
+
+          <div class="panel widget-cash">
+            <div class="panel-head">
+              <h3>Cash flow</h3>
+              <div class="legend-dots">
+                <span><i class="dot-income"></i>Income</span>
+                <span><i class="dot-spend"></i>Spend</span>
+              </div>
+            </div>
+            <div id="cashflow-bars"></div>
+          </div>
+
+          <div class="panel widget-invest" id="invest-teaser"></div>
+        </div>
+      </section>
+
+      <!-- ═════ TRANSACTIONS ═════ -->
+      <section class="view" id="view-txns" hidden>
+        <div class="panel toolbar">
+          <div class="input-wrap search-grow">
+            <svg class="ic"><use href="#i-search"/></svg>
+            <input id="txn-search" type="search" placeholder="Search description, merchant…" aria-label="Search transactions" />
+          </div>
+          <div class="input-wrap">
+            <svg class="ic"><use href="#i-calendar"/></svg>
+            <select id="txn-period" aria-label="Period">
+              <option value="30">Last 30 days</option>
+              <option value="90" selected>Last 3 months</option>
+              <option value="180">Last 6 months</option>
+              <option value="365">Last 12 months</option>
+              <option value="all">All time</option>
+            </select>
+          </div>
+          <div class="input-wrap">
+            <svg class="ic"><use href="#i-wallet"/></svg>
+            <select id="txn-acct" aria-label="Account"><option value="all">All accounts</option></select>
+          </div>
+          <button class="btn btn-soft" id="btn-csv" title="Export to CSV"><svg class="ic"><use href="#i-download"/></svg> CSV</button>
+        </div>
+        <div class="chip-row" id="txn-cat-chips"></div>
+        <div class="panel panel-flat">
+          <div id="txn-list" class="txn-list grouped"></div>
+          <div class="txn-empty" id="txn-empty" hidden>
+            <svg class="ic big"><use href="#i-search"/></svg>
+            <p>No transactions match your filters.</p>
+          </div>
+          <div class="load-more-wrap"><button class="btn btn-soft" id="txn-more" hidden>Load more</button></div>
+        </div>
+      </section>
+
+      <!-- ═════ CARDS ═════ -->
+      <section class="view" id="view-cards" hidden>
+        <div class="view-head">
+          <div>
+            <h2>Your cards</h2>
+            <p class="muted">Freeze instantly, set limits, add new cards.</p>
+          </div>
+          <button class="btn btn-primary" id="btn-add-card"><svg class="ic"><use href="#i-plus"/></svg> Add card</button>
+        </div>
+        <div class="cards-scroller-wrap">
+          <div class="cards-scroller" id="cards-carousel"></div>
+          <div class="carousel-dots" id="carousel-dots"></div>
+        </div>
+        <div id="card-controls"></div>
+      </section>
+
+      <!-- ═════ SEND MONEY ═════ -->
+      <section class="view" id="view-send" hidden>
+        <div class="view-head">
+          <div>
+            <h2>Send money</h2>
+            <p class="muted">Instant locally via Lynk &amp; Jam-Dex. Worldwide via SWIFT.</p>
+          </div>
+        </div>
+        <div class="seg seg-tabs" id="send-tabs" role="tablist">
+          <button class="seg-btn active" data-mode="local"><svg class="ic"><use href="#i-home"/></svg> Local</button>
+          <button class="seg-btn" data-mode="intl"><svg class="ic"><use href="#i-globe"/></svg> International</button>
+          <button class="seg-btn" data-mode="bill"><svg class="ic"><use href="#i-receipt"/></svg> Bill pay</button>
+        </div>
+        <div class="send-grid">
+          <div class="panel send-panel">
+            <div class="steps" id="send-steps"></div>
+            <div id="send-body"></div>
+          </div>
+          <aside class="send-side" id="send-side"></aside>
+        </div>
+      </section>
+
+      <!-- ═════ INVESTMENTS ═════ -->
+      <section class="view" id="view-invest" hidden>
+        <div class="view-head">
+          <div>
+            <h2>Investments</h2>
+            <p class="muted">Your island portfolio — funds, equities &amp; bonds.</p>
+          </div>
+          <button class="btn btn-primary" id="btn-new-invest"><svg class="ic"><use href="#i-plus"/></svg> New investment</button>
+        </div>
+        <div class="dash-grid invest-grid">
+          <div class="panel hero invest-hero" id="invest-hero"></div>
+          <div class="panel widget-alloc">
+            <div class="panel-head"><h3>Allocation</h3></div>
+            <div class="spend-flex">
+              <div id="alloc-donut" class="spend-donut"></div>
+              <div class="spend-legend" id="alloc-legend"></div>
+            </div>
+          </div>
+          <div class="panel widget-perf">
+            <div class="panel-head">
+              <h3>Performance</h3>
+              <div class="seg seg-mini-txt" id="perf-range">
+                <button class="seg-btn active" data-range="6">6M</button>
+                <button class="seg-btn" data-range="12">1Y</button>
+              </div>
+            </div>
+            <div id="perf-chart"></div>
+          </div>
+          <div class="panel widget-holdings">
+            <div class="panel-head"><h3>Holdings</h3></div>
+            <div id="holdings-list"></div>
+          </div>
+          <div class="panel widget-deposits">
+            <div class="panel-head"><h3>Fixed deposits</h3></div>
+            <div id="deposits-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═════ STATEMENTS ═════ -->
+      <section class="view" id="view-statements" hidden>
+        <div class="view-head">
+          <div>
+            <h2>Bank statements</h2>
+            <p class="muted">Preview on screen, then print or save as PDF.</p>
+          </div>
+        </div>
+        <div class="panel toolbar">
+          <div class="input-wrap">
+            <svg class="ic"><use href="#i-wallet"/></svg>
+            <select id="st-acct" aria-label="Account"></select>
+          </div>
+          <div class="chip-row grow" id="st-periods">
+            <button class="chip" data-days="month">Monthly</button>
+            <button class="chip" data-days="92">3 months</button>
+            <button class="chip" data-days="183">6 months</button>
+            <button class="chip" data-days="365">1 year</button>
+          </div>
+          <button class="btn btn-primary" id="btn-print"><svg class="ic"><use href="#i-printer"/></svg> Print / Save PDF</button>
+        </div>
+        <div class="paper-wrap">
+          <div class="paper" id="st-sheet"></div>
+        </div>
+      </section>
+
+      <!-- ═════ SETTINGS ═════ -->
+      <section class="view" id="view-settings" hidden>
+        <div class="view-head">
+          <div>
+            <h2>Settings</h2>
+            <p class="muted">Profile, appearance, security and preferences.</p>
+          </div>
+        </div>
+        <div class="settings-grid" id="settings-grid"></div>
+      </section>
+
+    </main>
+
+    <!-- Bottom nav (mobile) -->
+    <nav class="bottomnav" id="bottomnav" aria-label="Quick navigation">
+      <button class="bn-item active" data-nav="home"><svg class="ic"><use href="#i-home"/></svg><span>Home</span></button>
+      <button class="bn-item" data-nav="cards"><svg class="ic"><use href="#i-card"/></svg><span>Cards</span></button>
+      <button class="bn-fab" data-nav="send" aria-label="Send money"><svg class="ic"><use href="#i-send"/></svg></button>
+      <button class="bn-item" data-nav="invest"><svg class="ic"><use href="#i-trend-up"/></svg><span>Invest</span></button>
+      <button class="bn-item" id="bn-more"><svg class="ic"><use href="#i-grid"/></svg><span>More</span></button>
+    </nav>
+  </div>
+</div>
+
+<!-- ══════════════════════ SHARED ROOTS ══════════════════════ -->
+<div id="modal-root"></div>
+<div id="toast-root" aria-live="polite"></div>
+<div id="chart-tip" class="chart-tip" hidden></div>
+<canvas id="confetti-canvas" aria-hidden="true"></canvas>
+<div id="print-root"></div>
+
+<noscript><p style="padding:2rem;text-align:center;font-family:sans-serif">BlueMahoe Bank needs JavaScript enabled to run.</p></noscript>
+
+<script src="js/data.js?v=5"></script>
+<script src="js/charts.js?v=5"></script>
+<script src="js/app.js?v=5" defer></script>
+</body>
+</html>
