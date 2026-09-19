@@ -1,5 +1,20 @@
 # BlueMahoe Bank JM
 
+- LOADING SCREEN
+![BlueMahoe Loading](screenshots/BMB_Loading.png)
+
+- LOGIN PAGE
+![BlueMahoe Login](screenshots/BMB_Login.png)
+
+- TWO-STEP VERIFICATION (2FA)
+![BlueMahoe 2FA](screenshots/BMB_2FA.png)
+
+- BIOMETRIC LOGIN
+![BlueMahoe Biometrics](screenshots/BMB_Biometrics.png)
+
+- WELCOME / VIEW CHOOSER
+![BlueMahoe Welcome](screenshots/BMB_Welcome.png)
+
 A fully client-side **responsive digital banking demo** — HTML/CSS/JavaScript only, no build step, no dependencies, no backend. Named after the blue mahoe, Jamaica's national tree.
 
 > NOTE: **This is a fictional demo app.** All balances, cards, transactions and rates are dummy data. No real money, no real banking.
@@ -22,7 +37,7 @@ The 6-digit 2FA code is shown in a demo "SMS" toast and inside the verification 
 |---|---|
 | **Login & security** | Login → fake 2FA (6-box OTP with paste, resend timer, 3-attempt lockout), fake biometric fingerprint scan, remember-me session resume, 10-min idle auto sign-out with live session timer |
 | **Two UI modes** | **Simple View** (compact, flat, fast) and **Paradise View** (glassmorphism, gradient wash, glow, confetti, FX rate strip). Chosen at first login, switchable from the header or Settings |
-| **Light / dark mode** | Full dual theming, works in both view modes, persisted |
+| **Light / dark mode** | Single-icon header toggle + Settings switch — only the current theme is shown |
 | **Dashboard** | Total balance with count-up animation, **available vs. lien holds** (tap the lien chip for a full breakdown), hide-balance eye, quick actions, mini cards, animated spending donut, 6-month cash-flow bars, FX ticker |
 | **Transactions** | ~200 generated days of Jamaican merchant history (Hi-Lo, JPS, Digicel, Lynk…), search, category chips, period & account filters, date grouping, load-more, detail modal, **CSV export** |
 | **Cards** | Visa / Mastercard visual identity, **Lynk linked & Jam-Dex ready badges**, flip to see CVV, instant lock/unlock with stamp animation, spending-limit sliders, online/international/contactless toggles, report lost/stolen, add a new card with live preview + Luhn validation |
@@ -30,7 +45,8 @@ The 6-digit 2FA code is shown in a demo "SMS" toast and inside the verification 
 | **2FA on payments** | Any transaction over **J$10,000** requires a one-time code — international payments highlight enhanced screening |
 | **Investments** | Portfolio value, allocation donut, animated performance chart (6M/1Y), holding sparklines, buy flow (with 2FA over J$10k), fixed deposits with maturity progress |
 | **Statements** | Monthly / 3-month / 6-month / 1-year statements with opening/closing balance, lien note and running balance — on-screen paper preview + **Print / Save as PDF** via a dedicated print stylesheet |
-| **Settings** | Profile editing, theme, view mode, **live brand-colour re-skin** (for banks adopting the app), reduce-motion, biometric pref, trusted devices, session length, reset demo data |
+| **Appointments** | Book a branch visit for card replacement, unusable card, limits, new products, etc. Pick a date and see available slots **9:00 AM–2:00 PM** (12:00 lunch omitted) |
+| **Settings** | Profile editing, theme, view mode, **live brand-colour re-skin** (for banks adopting the app), reduce-motion, biometric pref, trusted devices, session length, appointments, reset demo data |
 | **Polish** | Login/logout curtain animations, welcome screen with view chooser, staggered widget entrances, category chip/donut animations, confetti on success, bottom-sheet modals on mobile, bottom tab bar + FAB, keyboard & reduced-motion support |
 
 ## Theming for banks

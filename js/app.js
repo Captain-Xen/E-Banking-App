@@ -31,7 +31,12 @@
     return d.toLocaleDateString('en-JM', { weekday: 'short', day: 'numeric', month: 'short' });
   };
   const initials = (name) => name.split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
-  const maskPhone = (p) => p.replace(/\d(?=\d{4})/g, '•');
+  /* Mask area code + first 5 of the 7-digit local number; keep last 2 visible.
+     e.g. "+1 (876) 555-0142" → "+1 (***) ***-**42" */
+  const maskPhone = (p) => String(p).replace(/\((\d+)\)([\d\-\s]*)/, (_, area, rest) => {
+    let left = 5;
+    return '(' + '*'.repeat(area.length) + ')' + rest.replace(/\d/g, d => (left-- > 0 ? '*' : d));
+  });
   const uid = () => 'u' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36);
   const ref6 = () => String(Math.floor(100000 + Math.random() * 900000));
 
@@ -42,11 +47,12 @@
     remember: true, loggedIn: false, seenWelcome: false, lastLogin: null,
     profileEdits: {}, prefs: { biometric: true, alerts: true, digest: false, promo: false, paperless: true, sessionMin: 10 },
     extraCards: [], cardState: {}, extraTxns: [], extraContacts: [],
-    balAdj: {}, investAdj: {}, mask: false,
+    balAdj: {}, investAdj: {}, mask: false, appointments: [],
   };
   let state = Object.assign({}, defaults);
   try { state = Object.assign(state, JSON.parse(localStorage.getItem(LS_KEY) || '{}')); } catch (e) { /* fresh */ }
   state.mask = false; /* never persist hidden balances */
+  if (!Array.isArray(state.appointments)) state.appointments = [];
   function save() {
     const s = Object.assign({}, state, { mask: undefined });
     try { localStorage.setItem(LS_KEY, JSON.stringify(s)); } catch (e) { }
@@ -265,9 +271,15 @@
     document.documentElement.dataset.theme = state.theme;
     const meta = $('meta[name="theme-color"]');
     if (meta) meta.content = state.theme === 'dark' ? '#04222a' : '#00b8a9';
+    const btn = $('#btn-theme');
+    if (btn) {
+      const next = state.theme === 'light' ? 'dark' : 'light';
+      btn.setAttribute('aria-label', `Switch to ${next} mode`);
+      btn.title = state.theme === 'light' ? 'Light mode — click for dark' : 'Dark mode — click for light';
+    }
   }
-  function applyView() { document.documentElement.dataset.view = state.view; syncViewToggle(); }
   function setTheme(t) { state.theme = t; applyTheme(); save(); }
+  function applyView() { document.documentElement.dataset.view = state.view; syncViewToggle(); }
   function setView(v, announce) {
     state.view = v; applyView(); save();
     if (announce) toast(v === 'paradise' ? 'Paradise View unlocked 🌴' : 'Simple View on', v === 'paradise' ? 'Glass, glow and motion — the full island experience.' : 'Clean, flat and fast. All features still here.', 'ok');
@@ -692,17 +704,20 @@
       });
     });
     $('#ghost-add').addEventListener('click', openAddCard);
-    carousel.addEventListener('scroll', () => {
-      const slide = $('.card-slide', carousel);
-      if (!slide) return;
-      const idx = Math.round(carousel.scrollLeft / (slide.offsetWidth + 20));
-      const id = allCards()[Math.min(idx, allCards().length - 1)];
-      if (id && id.id !== selectedCardId && idx >= 0 && idx < allCards().length) {
-        selectedCardId = id.id;
-        $$('#carousel-dots i').forEach(d => d.classList.toggle('on', d.dataset.dot === id.id));
-        renderCardControls();
-      }
-    }, { passive: true });
+    if (!carousel._bmScrollWired) {
+      carousel._bmScrollWired = true;
+      carousel.addEventListener('scroll', () => {
+        const slide = $('.card-slide', carousel);
+        if (!slide) return;
+        const idx = Math.round(carousel.scrollLeft / (slide.offsetWidth + 20));
+        const id = allCards()[Math.min(idx, allCards().length - 1)];
+        if (id && id.id !== selectedCardId && idx >= 0 && idx < allCards().length) {
+          selectedCardId = id.id;
+          $$('#carousel-dots i').forEach(d => d.classList.toggle('on', d.dataset.dot === id.id));
+          renderCardControls();
+        }
+      }, { passive: true });
+    }
 
     renderCardControls();
     setTimeout(() => scrollToCard(selectedCardId, true), 60);
@@ -1542,10 +1557,11 @@
 
       <div class="panel">
         <div class="panel-head"><h3>Appearance</h3></div>
-        <div class="set-row"><div class="sr-main"><b>Theme</b><span>Light or dark, anytime</span></div>
-          <div class="seg seg-mini-txt" id="set-theme">
-            <button class="seg-btn ${state.theme === 'light' ? 'active' : ''}" data-t="light">Light</button>
-            <button class="seg-btn ${state.theme === 'dark' ? 'active' : ''}" data-t="dark">Dark</button></div></div>
+        <div class="set-row"><div class="sr-main"><b>Theme</b><span>${state.theme === 'dark' ? 'Dark mode on' : 'Light mode on'} — tap to switch</span></div>
+          <button class="theme-switch ${state.theme === 'dark' ? 'is-dark' : ''}" id="set-theme" type="button" aria-label="Toggle theme">
+            <svg class="ts-ico ts-sun"><use href="#i-sun"/></svg>
+            <svg class="ts-ico ts-moon"><use href="#i-moon"/></svg>
+          </button></div>
         <div class="set-row" style="flex-direction:column;align-items:stretch">
           <div class="sr-main" style="margin-bottom:10px"><b>Interface style</b><span>Simple View is compact; Paradise View is the full experience</span></div>
           <div class="chooser-cards">
@@ -1596,6 +1612,12 @@
 
       <div class="panel">
         <div class="panel-head"><h3>Support</h3></div>
+        <div class="set-row"><div class="sr-main"><b>Book an appointment</b><span>Card issues, replacements &amp; branch visits</span></div>
+          <button class="btn btn-primary btn-sm" id="sup-appt">${icon('i-calendar')} Book</button></div>
+        ${(state.appointments && state.appointments.length) ? `
+          <div class="appt-list">${state.appointments.slice(0, 3).map(a => `
+            <div class="appt-item"><div><b>${esc(a.reason)}</b><span>${esc(a.dateLabel)} · ${esc(a.time)}</span></div>
+              <button class="btn btn-soft btn-sm" data-cancel-appt="${a.id}">Cancel</button></div>`).join('')}</div>` : ''}
         <div class="set-row"><div class="sr-main"><b>Customer care</b><span>888-YES-BLUE · 24/7</span></div>
           <button class="btn btn-soft btn-sm" id="sup-call">${icon('i-phone')} Call</button></div>
         <div class="set-row"><div class="sr-main"><b>Email</b><span>care@bluemahoe.jm</span></div>
@@ -1611,7 +1633,7 @@
       </div>`;
 
     /* wire */
-    $$('#set-theme .seg-btn').forEach(b => b.addEventListener('click', () => { setTheme(b.dataset.t); renderSettingsView(); }));
+    $('#set-theme').addEventListener('click', () => { setTheme(state.theme === 'light' ? 'dark' : 'light'); renderSettingsView(); });
     $$('[data-v]', grid).forEach(b => b.addEventListener('click', () => { setView(b.dataset.v, true); renderSettingsView(); }));
     $$('[data-brand]', grid).forEach(b => b.addEventListener('click', () => {
       state.brand = b.dataset.brand;
@@ -1639,6 +1661,12 @@
     $$('[data-pref]', grid).forEach(b => b.addEventListener('click', () => {
       state.prefs[b.dataset.pref] = !state.prefs[b.dataset.pref]; save(); renderSettingsView();
     }));
+    $('#sup-appt').addEventListener('click', openBookAppointment);
+    $$('[data-cancel-appt]', grid).forEach(b => b.addEventListener('click', () => {
+      state.appointments = (state.appointments || []).filter(a => a.id !== b.dataset.cancelAppt);
+      save(); renderSettingsView();
+      toast('Appointment cancelled', 'You can book another time anytime.', 'info');
+    }));
     $('#sup-call').addEventListener('click', () => toast('Calling 888-YES-BLUE…', 'Average wait: 42 seconds (demo).', 'info'));
     $('#sup-mail').addEventListener('click', () => toast('Draft opened', 'care@bluemahoe.jm will reply within a day (demo).', 'info'));
     $('#sup-branch').addEventListener('click', () => toast('Liguanea branch', 'Mon–Thu 8:30–4:00 · Fri 8:30–5:00 · Sat 9–1', 'info'));
@@ -1650,6 +1678,124 @@
         </div>`);
       $('#dz-go', m2).addEventListener('click', () => { localStorage.removeItem(LS_KEY); location.reload(); });
     });
+  }
+
+  /* ═══════════ BOOK APPOINTMENT ═══════════ */
+  const APPT_REASONS = [
+    { id: 'replace', label: 'Card replacement', desc: 'Lost, stolen or damaged card', icon: 'i-card' },
+    { id: 'unusable', label: 'Unable to use card', desc: 'Declines, PIN or contactless issues', icon: 'i-alert' },
+    { id: 'limits', label: 'Spending limits / unlock', desc: 'Raise limits or review locks', icon: 'i-sliders' },
+    { id: 'newacct', label: 'New account or product', desc: 'Savings, FX or investments', icon: 'i-bank' },
+    { id: 'other', label: 'Other branch visit', desc: 'General banking help', icon: 'i-help' },
+  ];
+  /* Hourly slots 9:00–14:00; 12:00 omitted (staff lunch — never shown) */
+  const APPT_SLOTS = ['9:00 AM', '10:00 AM', '11:00 AM', '1:00 PM', '2:00 PM'];
+
+  function apptMinDate() {
+    const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + 1);
+    return d;
+  }
+  function apptMaxDate() {
+    const d = apptMinDate(); d.setDate(d.getDate() + 21); return d;
+  }
+  function ymd(d) {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+  function formatApptDate(ymdStr) {
+    const [y, m, day] = ymdStr.split('-').map(Number);
+    return new Date(y, m - 1, day).toLocaleDateString('en-JM', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+  }
+  /** Deterministic “booked” slots so the demo feels real without a backend */
+  function takenSlotsFor(dateStr) {
+    let h = 0;
+    for (let i = 0; i < dateStr.length; i++) h = (h * 31 + dateStr.charCodeAt(i)) >>> 0;
+    const taken = new Set();
+    const n = h % 3; /* 0–2 slots taken */
+    for (let i = 0; i < n; i++) taken.add(APPT_SLOTS[(h + i * 2) % APPT_SLOTS.length]);
+    (state.appointments || []).filter(a => a.date === dateStr).forEach(a => taken.add(a.time));
+    return taken;
+  }
+
+  function openBookAppointment() {
+    const min = ymd(apptMinDate());
+    const max = ymd(apptMaxDate());
+    let reason = APPT_REASONS[0].id;
+    let dateVal = min;
+    let timeVal = '';
+
+    const m = openModal(`${modalHead('Book an appointment', 'Visit your branch — weekdays, 9:00 AM–2:00 PM (lunch break at noon)')}
+      <p class="muted" style="font-size:.82rem;font-weight:600;margin-bottom:8px">What’s this about?</p>
+      <div class="appt-reasons" id="appt-reasons">
+        ${APPT_REASONS.map((r, i) => `
+          <button type="button" class="appt-reason ${i === 0 ? 'sel' : ''}" data-reason="${r.id}">
+            ${icon(r.icon)}<span><b>${r.label}</b><span>${r.desc}</span></span>
+          </button>`).join('')}
+      </div>
+      <div class="field"><label for="appt-date">Date</label>
+        <div class="input-wrap">${icon('i-calendar')}<input type="date" id="appt-date" min="${min}" max="${max}" value="${min}"></div>
+      </div>
+      <p class="muted" style="font-size:.82rem;font-weight:600;margin:12px 0 4px">Available times</p>
+      <div class="appt-slots" id="appt-slots"></div>
+      <div class="modal-foot">
+        <button class="btn btn-soft" data-close>Cancel</button>
+        <button class="btn btn-primary" id="appt-confirm" disabled>${icon('i-check')} Confirm booking</button>
+      </div>`, { cls: 'modal-wide' });
+
+    const slotsEl = $('#appt-slots', m);
+    const confirmBtn = $('#appt-confirm', m);
+
+    function renderSlots() {
+      const taken = takenSlotsFor(dateVal);
+      timeVal = '';
+      confirmBtn.disabled = true;
+      slotsEl.innerHTML = APPT_SLOTS.map(t => {
+        const busy = taken.has(t);
+        return `<button type="button" class="appt-slot" data-time="${t}" ${busy ? 'disabled' : ''} title="${busy ? 'Taken' : 'Available'}">${t}</button>`;
+      }).join('');
+      $$('.appt-slot', slotsEl).forEach(b => b.addEventListener('click', () => {
+        $$('.appt-slot', slotsEl).forEach(x => x.classList.remove('sel'));
+        b.classList.add('sel');
+        timeVal = b.dataset.time;
+        confirmBtn.disabled = false;
+      }));
+    }
+
+    $$('[data-reason]', m).forEach(b => b.addEventListener('click', () => {
+      $$('[data-reason]', m).forEach(x => x.classList.remove('sel'));
+      b.classList.add('sel');
+      reason = b.dataset.reason;
+    }));
+    $('#appt-date', m).addEventListener('change', (e) => {
+      dateVal = e.target.value || min;
+      /* Skip Sundays in the demo */
+      const [y, mo, d] = dateVal.split('-').map(Number);
+      if (new Date(y, mo - 1, d).getDay() === 0) {
+        toast('Branch closed Sundays', 'Please pick a weekday.', 'warn');
+        e.target.value = min;
+        dateVal = min;
+      }
+      renderSlots();
+    });
+    confirmBtn.addEventListener('click', () => {
+      if (!timeVal) return;
+      const reasonObj = APPT_REASONS.find(r => r.id === reason) || APPT_REASONS[0];
+      const appt = {
+        id: uid(),
+        reason: reasonObj.label,
+        reasonId: reason,
+        date: dateVal,
+        dateLabel: formatApptDate(dateVal),
+        time: timeVal,
+        branch: user.branch,
+      };
+      state.appointments = [appt, ...(state.appointments || [])].slice(0, 8);
+      save();
+      m.close();
+      confetti();
+      toast('Appointment booked', `${appt.reason} · ${appt.dateLabel} at ${appt.time}`, 'ok');
+      if (currentView === 'settings') renderSettingsView();
+    });
+    renderSlots();
   }
 
   function openEditProfile() {
